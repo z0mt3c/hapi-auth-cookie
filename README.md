@@ -40,6 +40,9 @@ The `'cookie`' scheme takes the following required options:
 - `appendNext` - if `true` and `redirectTo` is `true`, appends the current request path to the
   query component of the `redirectTo` URI using the parameter name `'next'`. Set to a string to use
   a different parameter name. Defaults to `false`.
+- `nextFunc` - if `appendNext` is active this function will be called to generate the target url. The
+  default behavior is just to return `request.url.path`. The function has the signature `function(request)`
+  and has to return a string.
 - `redirectOnTry` - if `false` and route authentication mode is `'try'`, authentication errors will
   not trigger a redirection. Requires **hapi** version 6.2.0 or newer. Defaults to `true`;
 - `validateFunc` - an optional session validation function used to validate the content of the

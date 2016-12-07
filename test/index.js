@@ -1545,6 +1545,41 @@ describe('scheme', () => {
             });
         });
 
+        it('appendNext with custom appendFunc', (done) => {
+
+            const server = new Hapi.Server();
+            server.connection();
+            server.register(require('../'), (err) => {
+
+                expect(err).to.not.exist();
+
+                server.auth.strategy('default', 'cookie', true, {
+                    password: 'password-should-be-32-characters',
+                    ttl: 60 * 1000,
+                    redirectTo: 'http://example.com/login?mode=1',
+                    appendNext: 'done',
+                    nextFunc: () => {
+
+                        return '/foo';
+                    }
+                });
+
+                server.route({
+                    method: 'GET', path: '/', handler: function (request, reply) {
+
+                        return reply('never');
+                    }
+                });
+
+                server.inject('/', (res) => {
+
+                    expect(res.statusCode).to.equal(302);
+                    expect(res.headers.location).to.equal('http://example.com/login?mode=1&done=%2Ffoo');
+                    done();
+                });
+            });
+        });
+
         it('redirect on try', (done) => {
 
             const server = new Hapi.Server();
